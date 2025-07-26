@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Base Viper - Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav>
+    <ul>
+      <li> <a href="#acceuil">Acceuil</a></li>
+      <li> <a href="#mission">Mission</a></li>
+      <li> <a href="#contact">Conctact</a></li>
+    </ul>
+  </nav>
+
+  <section id="loginBox">
+    <h3>Connexion</h3>
+    <label for="loginName">Nom d’agent :</label>
+    <input type="text" id="loginName" placeholder="Ex: Anger Viper" />
+    <button id="loginButton">Se connecter</button>
+  </section>
+
+  <section id="accueil">
+    <h1>Bienvenue à la Base Viper</h1>
+    <p>Préparation, discipline, transformation.</p>
+    <button id="viperButton">Activer le message</button>
+    <button id="resetButton">Réinitialiser le journal</button>
+
+  <section id="mission"><h2>Objectif de la semaine</h2>
+  <ul>
+    <li>HTML/CSS : renforcement</li>
+    <li>Entrâinement physique</li>
+    <li>Avancer vers l'autonomie</li>
+  </ul>
+  </section>
+  <section id="contact">
+    <h2>Contact</h2>
+    <p>Fréquence active - message sécurisé seulement</p>
+  </section>
+    <div id="logContainer">
+      <h3>Journal de Mission</h3>
+      <ul id="logList"></ul>
+    </div>
+
+    <section id="levelBox">
+      <h3>Niveau de l'agent</h3>
+      <div id="levelBar"><div id="xpFill"></div></div>
+      <p id="levelText">Niveau 1 — XP : 0 / 100</p>
+      <p id="rankText">Rang : Recrue</p>
+      <div id="rankBadge"></div>
+    </section>
+
+    <section id="timebox">
+      <h3>Déclencheur de Mission</h3>
+      <label for="timeInput">Durée (en secondes) :</label>
+      <input type="number" id="timeInput" min="1" placeholder="Ex: 10"/>
+      <button id="startTimeBtn">Lancer</button>
+      <p id="timeDisplay">Temps restant: -</p>
+    </section>
+
+    <section id="successBox">
+      <h3>Succès Débloqués</h3>
+      <ul id="successList"></ul>
+    </section>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html> 
