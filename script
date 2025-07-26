@@ -1,0 +1,157 @@
+
+document.addEventListener("DOMContentLoaded", function () {
+  let currentUser = null;
+  let userData = { xp: 0, level: 1, successes: [], logs: [] };
+
+  const loginBtn = document.getElementById("loginButton");
+  const loginNameInput = document.getElementById("loginName");
+  const bouton = document.getElementById("viperButton");
+  const resetBtn = document.getElementById("resetButton");
+  const logList = document.getElementById("logList");
+  const xpFill = document.getElementById("xpFill");
+  const levelText = document.getElementById("levelText");
+  const rankText = document.getElementById("rankText");
+  const badge = document.getElementById("rankBadge");
+  const successList = document.getElementById("successList");
+  const timeInput = document.getElementById("timeInput");
+  const startTimeBtn = document.getElementById("startTimeBtn");
+  const timeDisplay = document.getElementById("timeDisplay");
+  letcountdownInterval = null;
+
+  startTimeBtn.addEventListener("click",() => {
+    const duration = parseInt(timeInput.value);
+    if (isNaN(duration) || duration <= 0) {
+      timeDisplay.textContent = "Veuillez entrer une durée valide.";
+      return;
+    }
+
+    let timeLeft = duration; timeDisplay.textContent = "⏲️ Mission accomplie.";
+    return;
+
+    
+    /* Si un timer était déja en cours, on l'annule*/
+    if (countdownInterval) clearInterval(countdownInterval);
+    countdownInterval = setInterval(() => {
+      timeLeft--;
+    
+      if (timeLeft <=0){clearInterval(countdownInterval); timeDisplay.textContent = "⏲️ Mission Accomplie."; }else{
+        timeDisplay.textContent = 'Temps restant : ${timeLeft} sec';
+      }
+    }, 1000);
+})
+    
+
+  loginBtn.addEventListener("click", () => {
+    const name = loginNameInput.value.trim();
+    if (!name) return alert("Nom d’agent requis !");
+    currentUser = name;
+    const saved = localStorage.getItem("user_" + currentUser);
+    userData = saved ? JSON.parse(saved) : { xp: 0, level: 1, successes: [], logs: [] };
+    loadUserData();
+    updateLevel();
+    alert("Bienvenue, Agent " + currentUser);
+  });
+
+  bouton.addEventListener("click", function () {
+    if (!currentUser) return alert("Connecte-toi d'abord !");
+    const heure = new Date().getHours();
+    const minutes = new Date().getMinutes().toString().padStart(2, '0');
+    const message = `[${heure}h${minutes}] Agent ${currentUser} : Mission validée.`;
+    const li = document.createElement("li");
+    li.textContent = message;
+    logList.prepend(li);
+    userData.logs.unshift(message);
+    userData.xp += 10;
+    if (userData.xp >= 100) {
+      userData.xp = 0;
+      userData.level++;
+    }
+    unlockSuccess("firstClick", "Première Mission Accomplie");
+    if (userData.level >= 5) unlockSuccess("level5", "Niveau 5 Atteint");
+    if (userData.level >= 10) unlockSuccess("level10", "Niveau 10 — Tacticien Confirmé");
+    if (getRank(userData.level) === "Fantôme") unlockSuccess("phantom", "Rang Fantôme Déverrouillé");
+    updateLevel();
+    saveUserData();
+  });
+
+  resetBtn.addEventListener("click", function () {
+    if (!currentUser) return alert("Connecte-toi d'abord !");
+    if (confirm("Réinitialiser le journal ?")) {
+      logList.innerHTML = "";
+      successList.innerHTML = "";
+      userData = { xp: 0, level: 1, successes: [], logs: [] };
+      saveUserData();
+      updateLevel();
+    }
+  });
+
+  function updateLevel() {
+    xpFill.style.width = `${userData.xp}%`;
+    levelText.textContent = `Niveau ${userData.level} — XP : ${userData.xp} / 100`;
+    const rank = getRank(userData.level);
+    rankText.textContent = `Rang : ${rank}`;
+    badge.style.backgroundImage = `url(${getBadgeURL(userData.level)})`;
+  }
+
+  function unlockSuccess(id, label) {
+    if (!userData.successes.includes(id)) {
+      const li = document.createElement("li");
+      li.textContent = label;
+      successList.appendChild(li);
+      userData.successes.push(id);
+      saveUserData();
+    }
+  }
+
+  function loadUserData() {
+    logList.innerHTML = "";
+    userData.logs.forEach(msg => {
+      const li = document.createElement("li");
+      li.textContent = msg;
+      logList.appendChild(li);
+    });
+    successList.innerHTML = "";
+    userData.successes.forEach(id => {
+      const label = getSuccessLabel(id);
+      if (label) {
+        const li = document.createElement("li");
+        li.textContent = label;
+        successList.appendChild(li);
+      }
+    });
+  }
+
+  function saveUserData() {
+    if (currentUser) {
+      localStorage.setItem("user_" + currentUser, JSON.stringify(userData));
+    }
+  }
+
+  function getRank(level) {
+    if (level < 3) return "Recrue";
+    if (level < 6) return "Opérateur";
+    if (level < 10) return "Tacticien";
+    if (level < 15) return "Élite";
+    if (level < 20) return "Légende";
+    return "Fantôme";
+  }
+
+  function getBadgeURL(level) {
+    if (level < 3) return "https://cdn-icons-png.flaticon.com/512/2583/2583376.png";
+    if (level < 6) return "https://cdn-icons-png.flaticon.com/512/726/726488.png";
+    if (level < 10) return "https://cdn-icons-png.flaticon.com/512/2583/2583380.png";
+    if (level < 15) return "https://cdn-icons-png.flaticon.com/512/763/763704.png";
+    if (level < 20) return "https://cdn-icons-png.flaticon.com/512/2278/2278992.png";
+    return "https://cdn-icons-png.flaticon.com/512/726/726448.png";
+  }
+
+  function getSuccessLabel(id) {
+    const map = {
+      "firstClick": "Première Mission Accomplie",
+      "level5": "Niveau 5 Atteint",
+      "level10": "Niveau 10 — Tacticien Confirmé",
+      "phantom": "Rang Fantôme Déverrouillé"
+    };
+    return map[id];
+  }
+});
